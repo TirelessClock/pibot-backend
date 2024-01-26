@@ -3,6 +3,7 @@ from flask_cors import CORS
 import spacy
 import json
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -16,8 +17,7 @@ database = load_json_file("db.json")
 sorted_tags = load_json_file("tags_to_doc_indices.json")
 nlp = spacy.load("en_core_web_sm")
 
-with open('key.txt', 'r') as file:
-    key = file.read()
+key = os.environ.get('OPENAI_API_KEY')
 client = OpenAI(api_key=key,)
 
 def chatGPTinteraction(prompt):
