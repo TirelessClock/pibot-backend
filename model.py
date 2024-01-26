@@ -6,7 +6,7 @@ from openai import OpenAI
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="https://pm-bot.vercel.app/")
 
 def load_json_file(file_path):
     with open(file_path, 'r') as json_file:
