@@ -6,7 +6,7 @@ from openai import OpenAI
 import os
 
 app = Flask(__name__)
-CORS(app, origins="https://pm-bot.vercel.app/")
+CORS(app, resources={r"/interaction": {"origins": "https://pm-bot.vercel.app"}})
 
 def load_json_file(file_path):
     with open(file_path, 'r') as json_file:
@@ -91,4 +91,4 @@ def chat_gpt_interaction():
 
 # Add more routes as needed
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(debug=True)
