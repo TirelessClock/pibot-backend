@@ -16,14 +16,23 @@ def load_json_file(file_path):
 database = load_json_file("db.json")
 sorted_tags = load_json_file("tags_to_doc_indices.json")
 nlp = spacy.load("en_core_web_sm")
+messages = []
 
 key = os.environ.get('OPENAI_API_KEY')
+# with open('key.txt') as f:
+#     key = f.read()
 client = OpenAI(api_key=key,)
 
 def chatGPTinteraction(prompt):
+
+    if messages.size() > 6: 
+        messages = []
+    
+    messages.append({"role": "user", "content": prompt})
+
     stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
+        messages=messages,
         stream=True,
     )
 
@@ -31,6 +40,8 @@ def chatGPTinteraction(prompt):
     for chunk in stream:
         if chunk.choices[0].delta.content is not None:
             res += chunk.choices[0].delta.content
+
+    messages.append({"role": "assistant", "content": res})
 
     return res
 
@@ -58,18 +69,27 @@ def pick_docs(entities, st, k):
     return res
 
 def promptEngineering(prompt, entities):
-
+    
+    text = ""
+    refs = []
     if len(entities) == 0:
-        return "Say 'Sorry, I can't answer this question based on the Prime Minister's past speeches. May I help you with something else?'"
+        return f"{prompt}. Respond briefly in reference to Prime Minister Modi's views on this. Do not be controversial."
 
-    text = "PM said in his speech:\n"
-    for tag, _ in entities.items():
-        text += f"{tag}: "
-        for idx in entities[tag]:
-            text += f"{database[idx]['content']}, "
-        text += '\n'
+    else:
+        text += "PM said in his speech:\n"
+        for tag, _ in entities.items():
+            text += f"{tag}: "
+            for idx in entities[tag]:
+                text += f"{database[idx]['content']}, "
+                refs.append({"month": database[idx]['month'], "year": database[idx]['year']})
+            text += '\n'
 
-    text += f"{prompt}. Respond briefly."
+    text += f"{prompt}. Talk about PM Modi's views based on above. Also, list the following reference dates after response with the heading 'References to this were made on dates:'"
+
+    for ref in refs: 
+        text += f"{ref["month"]}, {ref["year"]}\n"
+
+    print(text)
 
     return text
 
@@ -92,3 +112,6 @@ def chat_gpt_interaction():
 # Add more routes as needed
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
+
+# prompt = input("Input: ")
+# print("Output: ", inputPrompt(prompt))

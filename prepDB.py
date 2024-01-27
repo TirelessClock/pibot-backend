@@ -20,6 +20,10 @@ def docWork(path):
     except Exception as e: 
         print("!!!!!!SKIPPED!!!!!!")
         return []
+    
+    path_parts = path.split('\\')
+    month = path_parts[-2]
+    year = path_parts[-4]
 
     res = []
     for para in doc.paragraphs:
@@ -27,7 +31,7 @@ def docWork(path):
         content = para.text
         sentences = split_into_sentences(content)
         for sentence in sentences:
-            res.append({"content": sentence, "tags": {}})
+            res.append({"content": sentence, "tags": {}, "month": month, "year": year,})
 
     return res
 
@@ -47,7 +51,7 @@ def entity_extraction(text):
 
 # Iterate through all the speeches and build database of content and tags
 def speeches_iter():
-    speeches_dir = "C:\\Users\\abhim\\OneDrive\\Documents\\Projects\\pib chatbot\\backend\\speeches"
+    speeches_dir = "C:\\Users\\abhim\\OneDrive\\Documents\\Projects\\pib chatbot\\speeches"
     database = []
     x = 1
     for year in os.listdir(speeches_dir):
