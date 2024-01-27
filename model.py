@@ -86,7 +86,7 @@ def promptEngineering(prompt, entities):
                 refs.append({"month": database[idx]['month'], "year": database[idx]['year']})
             text += '\n'
 
-    text += f"{prompt}. Talk about PM Modi's views based on above. Also, list the following reference dates after response with the heading 'References to this were made on dates:'"
+    text += f"{prompt}. Talk about PM Modi's views based on above. Also, list the following reference dates after response"
 
     for ref in refs: 
         text += f"{ref['month']}, {ref['year']}\n"
