@@ -16,7 +16,7 @@ def load_json_file(file_path):
 database = load_json_file("db.json")
 sorted_tags = load_json_file("tags_to_doc_indices.json")
 nlp = spacy.load("en_core_web_sm")
-messages = []
+texts = []
 
 key = os.environ.get('OPENAI_API_KEY')
 # with open('key.txt') as f:
@@ -25,14 +25,14 @@ client = OpenAI(api_key=key,)
 
 def chatGPTinteraction(prompt):
 
-    if messages.size() > 6: 
-        messages = []
+    if len(texts) > 6: 
+        texts = []
     
-    messages.append({"role": "user", "content": prompt})
+    texts.append({"role": "user", "content": prompt})
 
     stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=messages,
+        messages=texts,
         stream=True,
     )
 
@@ -41,7 +41,7 @@ def chatGPTinteraction(prompt):
         if chunk.choices[0].delta.content is not None:
             res += chunk.choices[0].delta.content
 
-    messages.append({"role": "assistant", "content": res})
+    texts.append({"role": "assistant", "content": res})
 
     return res
 
