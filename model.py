@@ -16,7 +16,7 @@ def load_json_file(file_path):
 database = load_json_file("db.json")
 sorted_tags = load_json_file("tags_to_doc_indices.json")
 nlp = spacy.load("en_core_web_sm")
-texts = []
+seriesOfMessages = []
 
 key = os.environ.get('OPENAI_API_KEY')
 # with open('key.txt') as f:
@@ -25,14 +25,16 @@ client = OpenAI(api_key=key,)
 
 def chatGPTinteraction(prompt):
 
-    if len(texts) > 6: 
-        texts = []
+    global seriesOfMessages
+
+    if len(seriesOfMessages) > 6: 
+        seriesOfMessages = []
     
-    texts.append({"role": "user", "content": prompt})
+    seriesOfMessages.append({"role": "user", "content": prompt})
 
     stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=texts,
+        messages=seriesOfMessages,
         stream=True,
     )
 
@@ -41,7 +43,7 @@ def chatGPTinteraction(prompt):
         if chunk.choices[0].delta.content is not None:
             res += chunk.choices[0].delta.content
 
-    texts.append({"role": "assistant", "content": res})
+    seriesOfMessages.append({"role": "assistant", "content": res})
 
     return res
 
@@ -88,8 +90,6 @@ def promptEngineering(prompt, entities):
 
     for ref in refs: 
         text += f"{ref['month']}, {ref['year']}\n"
-
-    print(text)
 
     return text
 
