@@ -87,7 +87,7 @@ def promptEngineering(prompt, entities):
     text += f"{prompt}. Talk about PM Modi's views based on above. Also, list the following reference dates after response with the heading 'References to this were made on dates:'"
 
     for ref in refs: 
-        text += f"{ref["month"]}, {ref["year"]}\n"
+        text += f"{ref['month']}, {ref['year']}\n"
 
     print(text)
 
